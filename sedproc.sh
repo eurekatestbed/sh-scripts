@@ -9,14 +9,15 @@ files=*.dat
 dlm=;
 
 #debug
-echo started sedproc.sh on: `date`
+echo ----START $0 : `date` ----
+
 #mkdir for datDir
 if [ ! -d $datDir ]; then
-	mkdir $datDir
+	mkdir -p $datDir
 fi 
 #mkdir for texDir
 if [ ! -d $texDir ]; then
-	mkdir $texDir
+	mkdir -p $texDir
 fi 
 
 cd ${datDir}
@@ -56,4 +57,4 @@ rm tmp.03
 #rm tmp.04
 #rm tmp.05
 
-echo completed sedproc.sh on: `date`
+echo ----END $0 : `date` ----
