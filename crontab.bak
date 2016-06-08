@@ -1,0 +1,2 @@
+00 19 * * 1-5 /home/ec2-user/scripts/puller.sh >> /home/ec2-user/log/puller.log 2>&1
+00 19 * * 1-5 echo `date` /home/ec2-user/scripts/puller.sh >> /home/ec2-user/log/run.log 2>&1
