@@ -1,7 +1,7 @@
 #!/bin/bash
 # 13:07 08/06/2016
 # REM dl prices files from web
-PREV_DAYS=30
+PREV_DAYS=3650
 homeDir=/home/ec2-user
 datDir=${homeDir}/data/dat
 

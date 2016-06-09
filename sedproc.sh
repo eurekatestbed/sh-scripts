@@ -32,25 +32,29 @@ for file in ${datDir}/*.dat; do
 	#base=${name%.dat}
 	#echo $base
 	
-	#	REM remove double space/tab
-	# echo sed-ing $file
-	sed 's/  //g' <$file >tmp.01
-	sed 's/	//g' <tmp.01 >tmp.02
+	if [ ! -f ${texDir}/${name%.dat}.tex ]; then
+		#	REM remove double space/tab
+		# echo sed-ing $file
+		sed 's/  //g' <$file >tmp.01
+		sed 's/	//g' <tmp.01 >tmp.02
 
-	# #	REM remove space between delimiters
-	sed 's/$dlm /$dlm/g' <tmp.02 >tmp.03
-	sed 's/ $dlm/$dlm/g' <tmp.03 >tmp.04
+		# #	REM remove space between delimiters
+		sed 's/$dlm /$dlm/g' <tmp.02 >tmp.03
+		sed 's/ $dlm/$dlm/g' <tmp.03 >tmp.04
 
-	# #	REM remove space/tab from begining/end --^ *--(escaped ^)(begining ^)[(space/tab)](multiple *)(end $)
-	# sed 's/^^[ \t]*//g' <tmp.04 >tmp.05
-	# sed 's/[ \t]*$//g' <tmp.05 >tmp.00
-	
-	mv tmp.04 "${texDir}/${name%.dat}.tex"
-	echo processed ${texDir}/${name%.dat}.tex
+		# #	REM remove space/tab from begining/end --^ *--(escaped ^)(begining ^)[(space/tab)](multiple *)(end $)
+		# sed 's/^^[ \t]*//g' <tmp.04 >tmp.05
+		# sed 's/[ \t]*$//g' <tmp.05 >tmp.00
+		
+		mv tmp.04 "${texDir}/${name%.dat}.tex"
+		echo processed ${texDir}/${name%.dat}.tex
+	else
+		echo found ${name%.dat}
+	fi
 	
 done
 
-rm tmp.00
+#rm tmp.00
 rm tmp.01
 rm tmp.02
 rm tmp.03
