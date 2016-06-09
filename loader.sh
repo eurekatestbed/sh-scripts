@@ -12,7 +12,9 @@ files=*.tex
 dbDir=${homeDir}/data
 dbname=stocks.db
 tname=prices
-idx=$dbDir/idx.ptr
+idx=$dbDir/idx.ini
+loadFile=load.tex
+backupFile=${dbDir}/all.tex
 echo ----START $0 : `date` ----
 
 #mkdir for datDir
@@ -27,6 +29,8 @@ if [ ! -f $dbDir/$dbname ]; then
 	echo creating tables..
 	sqlite3 $dbDir/$dbname ".read ${scriptsDir}/loader.create.sql"
 fi
+#backup old ptr
+echo `cat ${idx}`: `date` >> $idx.bak
 
 ##for all file, import to db
 echo @@@Concating  data..
@@ -41,7 +45,7 @@ for file in ${texDir}/${files}; do
 		else
 			#echo -e ".separator ;\n.import '${file}' ${tname}" | sqlite3 $dbDir/$dbname 
 			#combine the file into one giant text file for more efficient bulk importing
-			cat ${file} >> ${dbDir}/all.tex ##JEXREM change to >>later
+			cat ${file} >> ${dbDir}/${loadFile} ##JEXREM change to >>later
 			echo ${file##*/} processed... 
 			echo ${file##*/} > $idx
 		fi
@@ -56,11 +60,13 @@ done
 
 #do actual import here
 echo @@@ Importing files to db now... `date`
-#echo -e ".separator ';'\n.import ${dbDir}/all.tex ${tname}" 
+#echo -e ".separator ';'\n.import ${dbDir}/${loadFile} ${tname}" 
 #echo $dbDir/$dbname 
 
-echo -e ".separator ';'\n.import ${dbDir}/all.tex ${tname}" | sqlite3 $dbDir/$dbname 
-rm ${dbDir}/all.tex
+echo -e ".separator ';'\n.import ${dbDir}/${loadFile} ${tname}" | sqlite3 $dbDir/$dbname 
+cat ${dbDir}/${loadFile} >> ${backupFile}
+rm ${dbDir}/${loadFile}
+
 echo ----END $0 : `date` ----
 
 
