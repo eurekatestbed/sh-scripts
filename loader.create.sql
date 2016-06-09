@@ -1,6 +1,8 @@
 CREATE TABLE prices(TDATE,NAME,REMARKS,CURRENCY,HIGH,LOW,LAST,CHANGE,VOLUME,BID,OFFER,MARKET,OPEN,VALUE,CODE not null,DClose, primary key(CODE,TDate));
 
 
+CREATE INDEX Idx_code On prices ( CODE );
+
 
 Drop Trigger If Exists insert_code_trim;
 Create Trigger insert_code_trim AFTER INSERT On prices 
@@ -14,8 +16,6 @@ begin
 update prices set code = trim(code) where rowid = new.rowid;
 end;
 
-
-CREATE  INDEX Idx_code On prices ( CODE );
 
 
 Drop View If Exists China_Vol;

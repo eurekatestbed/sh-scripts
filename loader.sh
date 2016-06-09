@@ -11,7 +11,8 @@ files=*.tex
 
 dbDir=${homeDir}/data
 dbname=stocks.db
-tname=sgx
+tname=prices
+
 echo ----START $0 : `date` ----
 
 #mkdir for datDir
@@ -22,9 +23,19 @@ if [ ! -d $dbDir ]; then
 	mkdir -p $dbDir
 fi 
 #run create tables sql
-if [ ! -f ${texDir}/${name%.dat}.tex ]; then
-	sqlite3 $dbDir$dbname ".read ${scriptsDir}/loader.create.sql"
+if [ ! -f $dbDir/$dbname ]; then
+	echo creating tables..
+	sqlite3 $dbDir/$dbname ".read ${scriptsDir}/loader.create.sql"
 fi
 
-
+##for all file, import to db
+echo importing data..
+for file in ${texDir}/${files}; do
+	if [ $(wc -c < $file ) -lt 10000 ]; then
+		echo ${file##*/}: file size is under 10kb, skipping..
+	else
+		echo -e ".separator ;\n.import '${file}' ${tname}" | sqlite3 $dbDir/$dbname 
+		echo ${file##*/} processed...
+	fi
+done
 echo ----END $0 : `date` ----
