@@ -12,7 +12,7 @@ files=*.tex
 dbDir=${homeDir}/data
 dbname=stocks.db
 tname=prices
-
+idx=$dbDir/idx.ptr
 echo ----START $0 : `date` ----
 
 #mkdir for datDir
@@ -29,13 +29,47 @@ if [ ! -f $dbDir/$dbname ]; then
 fi
 
 ##for all file, import to db
-echo importing data..
+echo @@@Concating  data..
 for file in ${texDir}/${files}; do
-	if [ $(wc -c < $file ) -lt 10000 ]; then
-		echo ${file##*/}: file size is under 10kb, skipping..
+	
+	#check if file is after last processed file
+	if [[ ${file##*/} > `cat $idx` ]]; then
+		#process file
+		if [ $(wc -c < $file ) -lt 10000 ]; then
+			#reject error / non table files
+			echo ${file##*/}: file size is under 10kb, skipping..
+		else
+			#echo -e ".separator ;\n.import '${file}' ${tname}" | sqlite3 $dbDir/$dbname 
+			#combine the file into one giant text file for more efficient bulk importing
+			cat ${file} >> ${dbDir}/all.tex ##JEXREM change to >>later
+			echo ${file##*/} processed... 
+			echo ${file##*/} > $idx
+		fi
+		
 	else
-		echo -e ".separator ;\n.import '${file}' ${tname}" | sqlite3 $dbDir/$dbname 
-		echo ${file##*/} processed...
+	#skip file
+		echo pointer skip ${file##*/} till `cat $idx`
 	fi
+
+
 done
+
+#do actual import here
+echo @@@ Importing files to db now... `date`
+#echo -e ".separator ';'\n.import ${dbDir}/all.tex ${tname}" 
+#echo $dbDir/$dbname 
+
+echo -e ".separator ';'\n.import ${dbDir}/all.tex ${tname}" | sqlite3 $dbDir/$dbname 
+rm ${dbDir}/all.tex
 echo ----END $0 : `date` ----
+
+
+
+
+	# echo grep: `grep $file $idx`
+	# if [ -z `grep $file $idx` ]; then
+		# echo pointer skip $file
+		# echo cat $idx
+	# else
+		# echo found
+	# fi
